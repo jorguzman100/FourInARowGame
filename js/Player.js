@@ -21,4 +21,20 @@ class Player {
 
         return tokens;
     }
+
+    /**
+     * Gets all toens that haven't been dropped.
+     * @return {array}  Array of unused tokens.
+     */
+    get unusedTokens() {
+        return this.tokens.filter(token => token.dropped === false);
+    }
+
+    /**
+     * Pulls one of the unused Token objects to be used as the Player's next active Token.
+     * @return {object} the first Token object in the unusedTokens array.
+     */
+    get activeToken() {
+        return this.unusedTokens[0];
+    }
 }

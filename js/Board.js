@@ -24,4 +24,16 @@ class Board {
 
         return spaces;
     }
+
+    /**
+     * Draw associated SVF spaces for all game spaces.
+     * Iterate through the 2D array of space objects and call the drawSVGSpace() method.
+     */
+    drawHTMLBoard() {
+        for(let column of this.spaces) {
+            for(let space of column) {
+                space.drawSVGSpace();
+            }
+        }
+    }
 }
