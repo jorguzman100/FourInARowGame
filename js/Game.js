@@ -24,23 +24,28 @@ class Game {
     }
 
     /**
-     * 
+     * Finds Space object to drop Token into, drops Token
      */
+
     playToken() {
         let spaces = this.board.spaces;
         let activeToken = this.activePlayer.activeToken;
         let targetColumn = spaces[activeToken.columnLocation];
         let targetSpace = null;
-        
+
         for (let space of targetColumn) {
-			if (space.token === null) {
-				targetSpace = space;
-			}
+            if (space.token === null) {
+                targetSpace = space;
+            }
         }
 
-        if(targetSpace !== null) {
+        if (targetSpace !== null) {
+            const game = this;
             game.ready = false;
-            activeToken.drop(targetSpace);
+
+            activeToken.drop(targetSpace, function () {
+                game.updateGameState(activeToken, targetSpace);
+            });
         }
     }
 
@@ -54,11 +59,11 @@ class Game {
     }
 
     handleKeydown(e) {
-    /* game.ready ? 
-   e.key === 'ArrowLeft' ? console.log('ArrowLeft') 
-   : e.key === 'ArrowRight' ? console.log('ArrowRight') 
-   : e.key === 'ArrowDown' ? console.log('ArrowDown') 
-   : false : false; */
+        /* game.ready ? 
+       e.key === 'ArrowLeft' ? console.log('ArrowLeft') 
+       : e.key === 'ArrowRight' ? console.log('ArrowRight') 
+       : e.key === 'ArrowDown' ? console.log('ArrowDown') 
+       : false : false; */
         if (game.ready) {
             if (e.key === 'ArrowLeft') {
                 console.log('ArrowLeft')
@@ -80,12 +85,12 @@ class Game {
      * @param   {Object}    target - Targeted space for dropped token.
      */
     updateGameState(token, target) {
-		target.mark(token);
+        target.mark(token);
 
         if (!this.checkForWin(target)) {
-            
-			this.switchPlayers();
-            
+
+            this.switchPlayers();
+
             if (this.activePlayer.checkTokens()) {
                 this.activePlayer.activeToken.drawHTMLToken();
                 this.ready = true;
@@ -94,7 +99,7 @@ class Game {
             }
         } else {
             this.gameOver(`${target.owner.name} wins!`)
-        }			
+        }
     }
 
     /** 
@@ -102,77 +107,77 @@ class Game {
      * @param   {Object}    target - Targeted space for dropped token.
      * @return  {boolean}   Boolean value indicating whether the game has been won (true) or not (false)
      */
-     checkForWin(target){
-    	const owner = target.token.owner;
-    	let win = false;
-	
-    	// vertical
-    	for (let x = 0; x < this.board.columns; x++ ){
-            for (let y = 0; y < this.board.rows - 3; y++){
-                if (this.board.spaces[x][y].owner === owner && 
-    				this.board.spaces[x][y+1].owner === owner && 
-    				this.board.spaces[x][y+2].owner === owner && 
-    				this.board.spaces[x][y+3].owner === owner) {
-                    	win = true;
-                }           
+    checkForWin(target) {
+        const owner = target.token.owner;
+        let win = false;
+
+        // vertical
+        for (let x = 0; x < this.board.columns; x++) {
+            for (let y = 0; y < this.board.rows - 3; y++) {
+                if (this.board.spaces[x][y].owner === owner &&
+                    this.board.spaces[x][y + 1].owner === owner &&
+                    this.board.spaces[x][y + 2].owner === owner &&
+                    this.board.spaces[x][y + 3].owner === owner) {
+                    win = true;
+                }
             }
         }
-	
-    	// horizontal
-    	for (let x = 0; x < this.board.columns - 3; x++ ){
-            for (let y = 0; y < this.board.rows; y++){
-                if (this.board.spaces[x][y].owner === owner && 
-    				this.board.spaces[x+1][y].owner === owner && 
-    				this.board.spaces[x+2][y].owner === owner && 
-    				this.board.spaces[x+3][y].owner === owner) {
-                    	win = true;
-                }           
+
+        // horizontal
+        for (let x = 0; x < this.board.columns - 3; x++) {
+            for (let y = 0; y < this.board.rows; y++) {
+                if (this.board.spaces[x][y].owner === owner &&
+                    this.board.spaces[x + 1][y].owner === owner &&
+                    this.board.spaces[x + 2][y].owner === owner &&
+                    this.board.spaces[x + 3][y].owner === owner) {
+                    win = true;
+                }
             }
         }
-		
-    	// diagonal
-    	for (let x = 3; x < this.board.columns; x++ ){
-            for (let y = 0; y < this.board.rows - 3; y++){
-                if (this.board.spaces[x][y].owner === owner && 
-    				this.board.spaces[x-1][y+1].owner === owner && 
-    				this.board.spaces[x-2][y+2].owner === owner && 
-    				this.board.spaces[x-3][y+3].owner === owner) {
-                    	win = true;
-                }           
+
+        // diagonal
+        for (let x = 3; x < this.board.columns; x++) {
+            for (let y = 0; y < this.board.rows - 3; y++) {
+                if (this.board.spaces[x][y].owner === owner &&
+                    this.board.spaces[x - 1][y + 1].owner === owner &&
+                    this.board.spaces[x - 2][y + 2].owner === owner &&
+                    this.board.spaces[x - 3][y + 3].owner === owner) {
+                    win = true;
+                }
             }
         }
-	
-    	// diagonal
-    	for (let x = 3; x < this.board.columns; x++ ){
-            for (let y = 3; y < this.board.rows; y++){
-                if (this.board.spaces[x][y].owner === owner && 
-    				this.board.spaces[x-1][y-1].owner === owner && 
-    				this.board.spaces[x-2][y-2].owner === owner && 
-    				this.board.spaces[x-3][y-3].owner === owner) {
-                    	win = true;
-                }           
+
+        // diagonal
+        for (let x = 3; x < this.board.columns; x++) {
+            for (let y = 3; y < this.board.rows; y++) {
+                if (this.board.spaces[x][y].owner === owner &&
+                    this.board.spaces[x - 1][y - 1].owner === owner &&
+                    this.board.spaces[x - 2][y - 2].owner === owner &&
+                    this.board.spaces[x - 3][y - 3].owner === owner) {
+                    win = true;
+                }
             }
         }
-	
-    	return win;
+
+        return win;
     }
 
     /** 
      * Switches active player. 
      */
-	switchPlayers() {
-		for (let player of this.players) {
-			player.active = player.active === true ? false : true;
-		}
+    switchPlayers() {
+        for (let player of this.players) {
+            player.active = player.active === true ? false : true;
+        }
     }
-    
+
 
     /** 
      * Displays winner info.
      * @param   {String}    message - Game over message.      
      */
     gameOver(message) {
-		document.getElementById('game-over').style.display = 'block';
+        document.getElementById('game-over').style.display = 'block';
         document.getElementById('game-over').textContent = message;
     }
 
